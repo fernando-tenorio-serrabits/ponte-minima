@@ -296,11 +296,7 @@
   function show(id, on) { var e = document.getElementById(id); if (e) e.style.display = on ? '' : 'none'; }
   function hint(k) {
     if (k === 1) { show('d1-tip', !touched[1]); show('d1-pulse', !touched[1]); show('d1-tip2', touched[1] && !chestTouched1); show('d1-pulse2', touched[1] && !chestTouched1); return; }
-    if (k === 2) {
-      var step = !home2 ? 0 : (!farm2 ? 1 : (!chest2 ? 2 : 3));
-      var txt = document.getElementById('d2-tip-text'); if (txt) txt.textContent = ['Clica na alavanca de casa', 'Agora a alavanca da fazenda', 'Agora clica no baú', ''][step];
-      show('d2-tip', step < 3); show('d2-pulse', step === 0); show('d2-pulseF', step === 1); show('d2-pulseC', step === 2); return;
-    }
+    if (k === 2) { show('d2-pulse', !(home2 || farm2 || chest2)); return; }
     ['-tip', '-pulse'].forEach(function (sfx) { show('d' + k + sfx, !touched[k]); });
   }
   function dust(svg, points, id) {
@@ -424,10 +420,7 @@
   dust(svg2, '610,210 500,210 500,272', 'd2-dnot');
   // duas alavancas, fios se juntam antes da porta E
   lever(svg2, 60, 300, 'd2-lhome', 'alavanca de casa');
-  pulse(svg2, 60, 300, 'd2-pulse');
-  pulse(svg2, 200, 300, 'd2-pulseF');
-  pulse(svg2, g2.cx + 30, 78, 'd2-pulseC');
-  tip(svg2, 16, 214, 236, 'Clica na alavanca de casa', 'd2-tip');
+  pulse(svg2, 60, 300, 'd2-pulse'); // degrau 3: sem balao — a pessoa esta sendo medida; so um cutucao ate o primeiro clique
   lever(svg2, 200, 300, 'd2-lfarm', 'alavanca da fazenda');
   dust(svg2, '60,294 60,272 200,272', 'd2-dhome');
   dust(svg2, '200,294 200,272 340,272', 'd2-dfarm');
