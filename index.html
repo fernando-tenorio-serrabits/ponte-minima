@@ -35,6 +35,7 @@
   svg.farm{width:100%;height:auto;display:block;user-select:none}
   @media (max-width:820px){svg.farm{min-width:640px} pre.code{font-size:13px}}
   .clickable{cursor:pointer}
+  .tip,.pulse{pointer-events:none}
   .lbl{font-size:12px;fill:var(--muted);font-family:inherit}
   .lbl.strong{fill:var(--ink);font-weight:700}
   .dust{stroke:var(--off);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;fill:none;transition:stroke .15s}
@@ -273,6 +274,22 @@
     label(svg, x, y + 24, text, true);
     return g;
   }
+  // balao de dica (some no primeiro clique do degrau) e pulso em volta da alavanca
+  function tip(svg, x, y, w, text, id, ptr) {
+    var g = el('g', { id: id, 'class': 'tip' }, svg);
+    el('rect', { x: x, y: y, width: w, height: 34, rx: 8, fill: '#1f1d1a', opacity: .92 }, g);
+    if (ptr) el('polygon', { points: ptr, fill: '#1f1d1a', opacity: .92 }, g);
+    var t = el('text', { x: x + 12, y: y + 22, fill: '#fff', 'font-size': '14', 'font-weight': '700', 'font-family': 'inherit' }, g);
+    t.textContent = text; return g;
+  }
+  function pulse(svg, x, y, id) {
+    var c = el('circle', { id: id, cx: x, cy: y - 8, r: 22, fill: 'none', stroke: '#e0432c', 'stroke-width': 3, 'class': 'pulse' }, svg);
+    el('animate', { attributeName: 'r', values: '14;30;14', dur: '1.6s', repeatCount: 'indefinite' }, c);
+    el('animate', { attributeName: 'opacity', values: '.9;0;.9', dur: '1.6s', repeatCount: 'indefinite' }, c);
+    return c;
+  }
+  var touched = [false, false, false];
+  function hint(k) { ['-tip', '-pulse'].forEach(function (sfx) { var e = document.getElementById('d' + k + sfx); if (e) e.style.display = touched[k] ? 'none' : ''; }); }
   function dust(svg, points, id) {
     return el('polyline', { points: points, 'class': 'dust', id: id }, svg);
   }
@@ -340,6 +357,8 @@
   dust(svg0, '150,214 150,106', 'd0-dust');
   lever(svg0, 150, 220, 'd0-lever', 'alavanca');
   label(svg0, 150 + 26, 175, 'fio', false, 'start');
+  pulse(svg0, 150, 220, 'd0-pulse');
+  tip(svg0, 190, 200, 300, 'Clica na alavanca: a colheita acontece', 'd0-tip', '190,212 176,220 190,228');
 
   // ---------- Degrau 2 ----------
   var svg1 = document.getElementById('svg1');
@@ -359,6 +378,8 @@
   dust(svg1, '610,210 500,210 500,272', 'd1-dnot');
   // alavanca -> entrada 1 da porta E
   lever(svg1, 260, 300, 'd1-lever', 'alavanca');
+  pulse(svg1, 260, 300, 'd1-pulse');
+  tip(svg1, 16, 280, 218, 'Clica na alavanca — e no baú', 'd1-tip', '234,292 246,300 234,308');
   dust(svg1, '260,294 260,272 340,272', 'd1-dlev');
   // porta E: t1 (entrada 1), t2 (entrada 2), junção, t3
   el('rect', { x: 320, y: 232, width: 60, height: 40, rx: 4, fill: 'url(#p-stone)', stroke: '#3a3a3a', 'stroke-width': 1.5 }, svg1);
@@ -388,6 +409,8 @@
   dust(svg2, '610,210 500,210 500,272', 'd2-dnot');
   // duas alavancas, fios se juntam antes da porta E
   lever(svg2, 60, 300, 'd2-lhome', 'alavanca de casa');
+  pulse(svg2, 60, 300, 'd2-pulse');
+  tip(svg2, 640, 272, 244, 'Clica nas alavancas e no baú', 'd2-tip');
   lever(svg2, 200, 300, 'd2-lfarm', 'alavanca da fazenda');
   dust(svg2, '60,294 60,272 200,272', 'd2-dhome');
   dust(svg2, '200,294 200,272 340,272', 'd2-dfarm');
@@ -452,6 +475,7 @@
   function line(id, cls) { var e = document.getElementById(id); e.classList.remove('true', 'false', 'run'); if (cls) e.classList.add(cls); }
 
   function render0() {
+    hint(0);
     var st = S[0], open = st.lever;
     setLever('d0-lever', st.lever); setOn('d0-dust', st.lever);
     water('d0', open, 0);
@@ -460,6 +484,7 @@
     document.getElementById('st0').textContent = open ? 'Alavanca ligada → o alçapão abre → a água desce → a colheita vai para o baú.' : 'Alavanca desligada. O alçapão segura a água.';
   }
   function render1() {
+    hint(1);
     var st = S[1];
     var notFull = !st.full;               // tocha do não
     var t1 = !st.lever, t2 = !notFull;    // entradas da porta E, invertidas
@@ -477,6 +502,7 @@
     document.getElementById('st1').textContent = t3 ? 'Alavanca ligada e baú com espaço → o alçapão abre.' : (st.lever && st.full ? 'Alavanca ligada, mas o baú está cheio → o alçapão fica fechado.' : (st.full ? 'Baú cheio e alavanca desligada → fechado.' : 'Alavanca desligada → fechado.'));
   }
   function render2() {
+    hint(2);
     var st = S[2];
     var any = st.leverHome || st.leverFarm;
     var notFull = !st.full;
@@ -492,14 +518,14 @@
   function renderAll() { render0(); render1(); render2(); }
 
   // ---------- cliques ----------
-  document.getElementById('d0-lever').addEventListener('click', function () { S[0].lever = !S[0].lever; render0(); });
-  document.getElementById('d1-lever').addEventListener('click', function () { S[1].lever = !S[1].lever; render1(); });
+  document.getElementById('d0-lever').addEventListener('click', function () { S[0].lever = !S[0].lever; touched[0] = true; render0(); });
+  document.getElementById('d1-lever').addEventListener('click', function () { S[1].lever = !S[1].lever; touched[1] = true; render1(); });
   document.getElementById('d1-chestg').classList.add('clickable');
-  document.getElementById('d1-chestg').addEventListener('click', function () { S[1].full = !S[1].full; render1(); });
-  document.getElementById('d2-lhome').addEventListener('click', function () { S[2].leverHome = !S[2].leverHome; render2(); });
-  document.getElementById('d2-lfarm').addEventListener('click', function () { S[2].leverFarm = !S[2].leverFarm; render2(); });
+  document.getElementById('d1-chestg').addEventListener('click', function () { S[1].full = !S[1].full; touched[1] = true; render1(); });
+  document.getElementById('d2-lhome').addEventListener('click', function () { S[2].leverHome = !S[2].leverHome; touched[2] = true; render2(); });
+  document.getElementById('d2-lfarm').addEventListener('click', function () { S[2].leverFarm = !S[2].leverFarm; touched[2] = true; render2(); });
   document.getElementById('d2-chestg').classList.add('clickable');
-  document.getElementById('d2-chestg').addEventListener('click', function () { S[2].full = !S[2].full; render2(); });
+  document.getElementById('d2-chestg').addEventListener('click', function () { S[2].full = !S[2].full; touched[2] = true; render2(); });
 
   // ---------- navegação ----------
   var secs = document.querySelectorAll('section.degrau');
