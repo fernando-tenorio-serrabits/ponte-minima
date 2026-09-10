@@ -17,6 +17,7 @@
   header{padding:18px 22px 6px;max-width:1180px;margin:0 auto}
   header h1{margin:0;font-size:1.35rem;letter-spacing:.2px}
   header p{margin:4px 0 0;color:var(--muted);font-size:.95rem}
+  header .five{color:var(--ink);font-size:1.05rem;background:#fbf5ec;border:1px solid #f0c59b;border-radius:999px;padding:1px 10px;margin-right:6px}
   nav.tabs{display:flex;gap:8px;padding:10px 22px 0;max-width:1180px;margin:0 auto;flex-wrap:wrap}
   nav.tabs button{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer;font-weight:600;font-size:.92rem}
   nav.tabs button[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
@@ -57,6 +58,14 @@
   pre.code .kw{color:#f0a45d;font-weight:700}
   pre.code .cm{color:var(--code-dim)}
   pre.code .fn{color:#8fd3ff}
+  pre.code .v{border-bottom:1px dotted rgba(255,255,255,.35);border-radius:4px;padding:0 2px}
+  pre.code .v .val{display:inline-block;margin-left:6px;padding:0 6px;border-radius:6px;font-size:11px;line-height:1.5;vertical-align:1px;background:rgba(255,255,255,.12);color:#e8e6df}
+  pre.code .v .val.yes{color:#7fe0a0} pre.code .v .val.no{color:#ff9a8a}
+  pre.code .v.changed{animation:vflash 1s ease-out}
+  pre.code .v.changed::after{content:' \25C0 mudou';color:#f0a45d;font-size:11px;font-weight:700}
+  pre.code .ln.changed{animation:lflash 1s ease-out}
+  @keyframes vflash{0%{background:rgba(240,164,93,.75)}100%{background:transparent}}
+  @keyframes lflash{0%{background:rgba(59,143,217,.9)}100%{background:rgba(59,143,217,.32)}}
   .badges{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
   .badge{font:13px/1.2 ui-monospace,Menlo,Consolas,monospace;border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:#faf8f2}
   .badge b{margin-left:6px}
@@ -120,7 +129,7 @@
 <body>
 <header>
   <h1>A fazenda que você fez — com o código do lado</h1>
-  <p>Uma fazenda de colheita do Minecraft, com o código do lado. Em três degraus: <b>1 ·</b> liga a alavanca e vê a colheita acontecer. <b>2 ·</b> a fazenda aprende a parar quando o baú enche — e você descobre o que as tochas estavam dizendo. <b>3 ·</b> o código some, e é você que monta. Cinco minutos, sem nota.</p>
+  <p><b class="five">Cinco minutos.</b> Uma fazenda de colheita do Minecraft, com o código do lado, em três degraus: <b>1 ·</b> liga a alavanca e vê a colheita acontecer. <b>2 ·</b> a fazenda aprende a parar quando o baú enche — e você descobre o que as tochas estavam dizendo. <b>3 ·</b> o código some, e é você que monta.</p>
 </header>
 
 <nav class="tabs" role="tablist">
@@ -143,7 +152,7 @@
     </div>
     <div class="card">
       <h2>O código do lado</h2>
-<pre class="code" id="code0"><span class="ln" id="c0l1"><span class="kw">se</span> alavanca_ligada:</span><span class="ln" id="c0l2">    <span class="fn">abrir_alcapao</span>()   <span class="cm"># a água faz o resto</span></span></pre>
+<pre class="code" id="code0"><span class="ln" id="c0l1"><span class="kw">se</span> <span class="v" id="c0-alavanca">alavanca_ligada</span>:</span><span class="ln" id="c0l2">    <span class="fn">abrir_alcapao</span>()   <span class="cm"># a água faz o resto</span></span></pre>
       <div class="badges" id="b0"></div>
       <p><b>O mapa:</b> a alavanca é o <code>se</code> — a pergunta que o sistema faz. O alçapão é a ação — o que ele faz quando a resposta é sim.</p>
       <p>A água, os funis e o baú <b>não estão no código</b>. Eles não decidem nada: são o que acontece <i>depois</i> da decisão. No código, só a decisão aparece.</p>
@@ -164,7 +173,7 @@
     </div>
     <div class="card">
       <h2>O código do lado</h2>
-<pre class="code" id="code1"><span class="ln" id="c1l1"><span class="kw">se</span> alavanca_ligada <span class="kw">e</span> <span class="kw">não</span> bau_cheio:</span><span class="ln" id="c1l2">    <span class="fn">abrir_alcapao</span>()</span></pre>
+<pre class="code" id="code1"><span class="ln" id="c1l1"><span class="kw">se</span> <span class="v" id="c1-alavanca">alavanca_ligada</span> <span class="kw">e</span> <span class="kw">não</span> <span class="v" id="c1-bau">bau_cheio</span>:</span><span class="ln" id="c1l2">    <span class="fn">abrir_alcapao</span>()</span></pre>
       <div class="badges" id="b1"></div>
       <blockquote class="ponte">
         <p>A tocha depois do comparador é o <b><code>não</code></b>: ela responde o contrário do que recebe.</p>
@@ -480,14 +489,23 @@
     var b = document.createElement('span'); b.className = 'badge ' + (val ? 'yes' : 'no');
     b.innerHTML = name + ' <b>' + (val ? 'SIM' : 'NÃO') + '</b>'; host.appendChild(b);
   }
-  function line(id, cls) { var e = document.getElementById(id); e.classList.remove('true', 'false', 'run'); if (cls) e.classList.add(cls); }
+  function line(id, cls, flash) { var e = document.getElementById(id); e.classList.remove('true', 'false', 'run'); if (cls) e.classList.add(cls); if (flash) { e.classList.remove('changed'); void e.offsetWidth; e.classList.add('changed'); setTimeout(function () { e.classList.remove('changed'); }, 1000); } }
+  function setVar(id, val, changed) {
+    var e = document.getElementById(id); if (!e) return;
+    var chip = e.querySelector('.val'); if (!chip) { chip = document.createElement('span'); chip.className = 'val'; e.appendChild(chip); }
+    chip.textContent = val ? 'SIM' : 'NÃO'; chip.className = 'val ' + (val ? 'yes' : 'no');
+    if (changed) { e.classList.remove('changed'); void e.offsetWidth; e.classList.add('changed'); setTimeout(function () { e.classList.remove('changed'); }, 1000); }
+  }
+  var prev0 = { lever: false, open: false }, prev1 = { lever: false, full: false, open: false };
 
   function render0() {
     hint(0);
     var st = S[0], open = st.lever;
     setLever('d0-lever', st.lever); setOn('d0-dust', st.lever);
     water('d0', open, 0);
-    line('c0l1', open ? 'true' : 'false'); line('c0l2', open ? 'run' : null);
+    setVar('c0-alavanca', st.lever, st.lever !== prev0.lever);
+    line('c0l1', open ? 'true' : 'false'); line('c0l2', open ? 'run' : null, open && !prev0.open);
+    prev0 = { lever: st.lever, open: open };
     var b = document.getElementById('b0'); b.innerHTML = ''; badge(b, 'alavanca_ligada', st.lever);
     document.getElementById('st0').textContent = open ? 'Alavanca ligada → o alçapão abre → a água desce → a colheita vai para o baú.' : 'Alavanca desligada. O alçapão segura a água.';
   }
@@ -504,7 +522,9 @@
     setLit('d1-t1', t1); setLit('d1-t2', t2); setOn('d1-dj', junc); setOn('d1-dj2', junc);
     setLit('d1-t3', t3); setOn('d1-dout', t3);
     water('d1', t3, 1);
-    line('c1l1', t3 ? 'true' : 'false'); line('c1l2', t3 ? 'run' : null);
+    setVar('c1-alavanca', st.lever, st.lever !== prev1.lever); setVar('c1-bau', st.full, st.full !== prev1.full);
+    line('c1l1', t3 ? 'true' : 'false'); line('c1l2', t3 ? 'run' : null, t3 && !prev1.open);
+    prev1 = { lever: st.lever, full: st.full, open: t3 };
     var b = document.getElementById('b1'); b.innerHTML = '';
     badge(b, 'alavanca_ligada', st.lever); badge(b, 'bau_cheio', st.full); badge(b, 'não bau_cheio', notFull); badge(b, 'alavanca_ligada e não bau_cheio', t3);
     document.getElementById('st1').textContent = t3 ? 'Alavanca ligada e baú com espaço → o alçapão abre.' : (st.lever && st.full ? 'Alavanca ligada, mas o baú está cheio → o alçapão fica fechado.' : (st.full ? 'Baú cheio e alavanca desligada → fechado.' : 'Alavanca desligada → fechado.'));
