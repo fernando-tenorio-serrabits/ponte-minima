@@ -274,7 +274,7 @@
     var g = el('g', { id: id, 'class': 'tip' }, svg);
     el('rect', { x: x, y: y, width: w, height: 34, rx: 8, fill: '#1f1d1a', opacity: .92 }, g);
     if (ptr) el('polygon', { points: ptr, fill: '#1f1d1a', opacity: .92 }, g);
-    var t = el('text', { x: x + 12, y: y + 22, fill: '#fff', 'font-size': '14', 'font-weight': '700', 'font-family': 'inherit' }, g);
+    var t = el('text', { id: id + '-text', x: x + 12, y: y + 22, fill: '#fff', 'font-size': '14', 'font-weight': '700', 'font-family': 'inherit' }, g);
     t.textContent = text; return g;
   }
   function pulse(svg, x, y, id) {
@@ -283,8 +283,17 @@
     el('animate', { attributeName: 'opacity', values: '.9;0;.9', dur: '1.6s', repeatCount: 'indefinite' }, c);
     return c;
   }
-  var touched = [false, false, false];
-  function hint(k) { ['-tip', '-pulse'].forEach(function (sfx) { var e = document.getElementById('d' + k + sfx); if (e) e.style.display = touched[k] ? 'none' : ''; }); }
+  var touched = [false, false, false], chestTouched1 = false, home2 = false, farm2 = false, chest2 = false;
+  function show(id, on) { var e = document.getElementById(id); if (e) e.style.display = on ? '' : 'none'; }
+  function hint(k) {
+    if (k === 1) { show('d1-tip', !touched[1]); show('d1-pulse', !touched[1]); show('d1-tip2', touched[1] && !chestTouched1); show('d1-pulse2', touched[1] && !chestTouched1); return; }
+    if (k === 2) {
+      var step = !home2 ? 0 : (!farm2 ? 1 : (!chest2 ? 2 : 3));
+      var txt = document.getElementById('d2-tip-text'); if (txt) txt.textContent = ['Clica na alavanca de casa', 'Agora a alavanca da fazenda', 'Agora clica no baú', ''][step];
+      show('d2-tip', step < 3); show('d2-pulse', step === 0); show('d2-pulseF', step === 1); show('d2-pulseC', step === 2); return;
+    }
+    ['-tip', '-pulse'].forEach(function (sfx) { show('d' + k + sfx, !touched[k]); });
+  }
   function dust(svg, points, id) {
     return el('polyline', { points: points, 'class': 'dust', id: id }, svg);
   }
@@ -374,7 +383,9 @@
   // alavanca -> entrada 1 da porta E
   lever(svg1, 260, 300, 'd1-lever', 'alavanca');
   pulse(svg1, 260, 300, 'd1-pulse');
-  tip(svg1, 16, 280, 218, 'Clica na alavanca — e no baú', 'd1-tip', '234,292 246,300 234,308');
+  tip(svg1, 16, 280, 218, 'Clica na alavanca', 'd1-tip', '234,292 246,300 234,308');
+  pulse(svg1, g1.cx + 30, 78, 'd1-pulse2');
+  tip(svg1, 730, 53, 160, 'Agora clica no baú', 'd1-tip2', '730,64 718,70 730,76');
   dust(svg1, '260,294 260,272 340,272', 'd1-dlev');
   // porta E: t1 (entrada 1), t2 (entrada 2), junção, t3
   el('rect', { x: 320, y: 232, width: 60, height: 40, rx: 4, fill: 'url(#p-stone)', stroke: '#3a3a3a', 'stroke-width': 1.5 }, svg1);
@@ -405,7 +416,9 @@
   // duas alavancas, fios se juntam antes da porta E
   lever(svg2, 60, 300, 'd2-lhome', 'alavanca de casa');
   pulse(svg2, 60, 300, 'd2-pulse');
-  tip(svg2, 640, 272, 244, 'Clica nas alavancas e no baú', 'd2-tip');
+  pulse(svg2, 200, 300, 'd2-pulseF');
+  pulse(svg2, g2.cx + 30, 78, 'd2-pulseC');
+  tip(svg2, 16, 214, 236, 'Clica na alavanca de casa', 'd2-tip');
   lever(svg2, 200, 300, 'd2-lfarm', 'alavanca da fazenda');
   dust(svg2, '60,294 60,272 200,272', 'd2-dhome');
   dust(svg2, '200,294 200,272 340,272', 'd2-dfarm');
@@ -516,11 +529,11 @@
   document.getElementById('d0-lever').addEventListener('click', function () { S[0].lever = !S[0].lever; touched[0] = true; render0(); });
   document.getElementById('d1-lever').addEventListener('click', function () { S[1].lever = !S[1].lever; touched[1] = true; render1(); });
   document.getElementById('d1-chestg').classList.add('clickable');
-  document.getElementById('d1-chestg').addEventListener('click', function () { S[1].full = !S[1].full; touched[1] = true; render1(); });
-  document.getElementById('d2-lhome').addEventListener('click', function () { S[2].leverHome = !S[2].leverHome; touched[2] = true; render2(); });
-  document.getElementById('d2-lfarm').addEventListener('click', function () { S[2].leverFarm = !S[2].leverFarm; touched[2] = true; render2(); });
+  document.getElementById('d1-chestg').addEventListener('click', function () { S[1].full = !S[1].full; chestTouched1 = true; render1(); });
+  document.getElementById('d2-lhome').addEventListener('click', function () { S[2].leverHome = !S[2].leverHome; home2 = true; render2(); });
+  document.getElementById('d2-lfarm').addEventListener('click', function () { S[2].leverFarm = !S[2].leverFarm; farm2 = true; render2(); });
   document.getElementById('d2-chestg').classList.add('clickable');
-  document.getElementById('d2-chestg').addEventListener('click', function () { S[2].full = !S[2].full; touched[2] = true; render2(); });
+  document.getElementById('d2-chestg').addEventListener('click', function () { S[2].full = !S[2].full; chest2 = true; render2(); });
 
   // ---------- navegação ----------
   var secs = document.querySelectorAll('section.degrau');
