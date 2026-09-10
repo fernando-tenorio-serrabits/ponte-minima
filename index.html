@@ -86,6 +86,9 @@
   .tt th{background:#f1eee6;font-weight:600}
   .tt td.hit{color:var(--yes);font-weight:700} .tt td.miss{color:var(--no);font-weight:700}
   .headline{margin:10px 0 0;font-weight:700;font-size:.95rem}
+  #testout.dim table{opacity:.45}
+  #testout.dim .headline{color:var(--muted);font-weight:500}
+  #testout.flash .headline{color:var(--accent)}
   #testbox{margin-top:10px}
   .sendrow .send{margin-top:0;display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--ink);border:1px solid var(--ink)} /* os dois iguais: nenhum convida mais que o outro */
   .send .ico{width:22px;height:22px;flex:0 0 auto}
@@ -210,7 +213,7 @@
 </main>
 
 <footer>
-  <span>versão dos itens: <code id="ver">ponte-2026-09-10-5</code> — vai junto com a resposta</span>
+  <span>versão dos itens: <code id="ver">ponte-2026-09-10-6</code> — vai junto com a resposta</span>
   <span>prototypes/ponte-minima.html · instrumento descartável, não é produto</span>
 </footer>
 
@@ -221,7 +224,7 @@
     action: 'https://docs.google.com/forms/d/e/1FAIpQLScMmBTKBIAW81PqDjlZ_RH4Uykh3YGX0E8j4M7sKvSuuLlkAw/formResponse',
     field: 'entry.829939594' // a unica pergunta do deposito: o registro em JSON
   };
-  var VERSION = 'ponte-2026-09-10-5';  // -5b: nada trava depois do envio
+  var VERSION = 'ponte-2026-09-10-6';  // -6: a tabela mantem a ultima avaliacao enquanto a linha nao fecha
 
   // ---------- estado por degrau ----------
   var S = [
@@ -616,18 +619,29 @@
   var testout = document.getElementById('testout');
   function unlockSend() { document.querySelectorAll('.sendrow .send').forEach(function (b) { b.disabled = false; }); }
   var COMBOS = [[0,0,0],[1,0,0],[0,1,0],[1,1,0],[0,0,1],[1,0,1],[0,1,1],[1,1,1]];
+  var lastTable = null; // ultima avaliacao valida: fica na tela enquanto a linha atual nao fecha
   function liveTable() {
     var t = currentToks(), f = null;
     if (t.length) { try { f = parse(t); } catch (err) { f = null; } }
     var complete = !!f && /alavanca_casa/.test(t.join(' ')) && /alavanca_fazenda/.test(t.join(' ')) && /bau_cheio/.test(t.join(' '));
     if (complete) { var line = codigo(); if (primeira === null) primeira = line; variantes[line] = 1; }
-    var rows = '', hits = 0;
-    COMBOS.forEach(function (c) {
-      var e = { A: !!c[0], B: !!c[1], C: !!c[2] }, real = target(e), mine = f ? !!f(e) : null, ok = mine === real; if (ok) hits++;
-      rows += '<tr><td>' + (e.A ? 'ligada' : 'desl.') + '</td><td>' + (e.B ? 'ligada' : 'desl.') + '</td><td>' + (e.C ? 'cheio' : 'com espaço') + '</td><td>' + (mine === null ? '—' : (mine ? 'abre' : 'fechado')) + '</td><td>' + (real ? 'abre' : 'fechado') + '</td><td class="' + (mine === null ? '' : (ok ? 'hit' : 'miss')) + '">' + (mine === null ? '' : (ok ? '✓' : '✗')) + '</td></tr>';
-    });
-    var head = !f ? 'A tabela mostra o que a sua linha faz em cada situação — vai mudando enquanto você monta.' : (hits === 8 ? 'A sua linha faz exatamente o que a fazenda faz: 8 de 8.' : 'Bateu em ' + hits + ' de 8. Olha onde diverge:');
-    testout.innerHTML = '<p class="headline">' + head + '</p><table class="tt"><tr><th>alavanca de casa</th><th>alavanca da fazenda</th><th>baú</th><th>sua linha</th><th>a fazenda</th><th></th></tr>' + rows + '</table>';
+    if (f) {
+      var rows = '', hits = 0;
+      COMBOS.forEach(function (c) {
+        var e = { A: !!c[0], B: !!c[1], C: !!c[2] }, real = target(e), mine = !!f(e), ok = mine === real; if (ok) hits++;
+        rows += '<tr><td>' + (e.A ? 'ligada' : 'desl.') + '</td><td>' + (e.B ? 'ligada' : 'desl.') + '</td><td>' + (e.C ? 'cheio' : 'com espaço') + '</td><td>' + (mine ? 'abre' : 'fechado') + '</td><td>' + (real ? 'abre' : 'fechado') + '</td><td class="' + (ok ? 'hit' : 'miss') + '">' + (ok ? '✓' : '✗') + '</td></tr>';
+      });
+      var head = hits === 8 ? 'A sua linha faz exatamente o que a fazenda faz: 8 de 8.' : 'Bateu em ' + hits + ' de 8 — tem ✗: mexe na linha e vê a tabela mudar.';
+      lastTable = { head: head, rows: rows, line: t.join(' ') };
+      testout.className = ''; testout.innerHTML = '<p class="headline">' + head + '</p><table class="tt"><tr><th>alavanca de casa</th><th>alavanca da fazenda</th><th>baú</th><th>sua linha</th><th>a fazenda</th><th></th></tr>' + rows + '</table>';
+      testout.classList.add('flash'); setTimeout(function () { testout.classList.remove('flash'); }, 350);
+    } else if (lastTable && t.length) {
+      testout.className = 'dim'; testout.innerHTML = '<p class="headline">Linha incompleta — a tabela mostra a última que fechou (<code>' + lastTable.line + '</code>).</p><table class="tt"><tr><th>alavanca de casa</th><th>alavanca da fazenda</th><th>baú</th><th>sua linha</th><th>a fazenda</th><th></th></tr>' + lastTable.rows + '</table>';
+    } else {
+      var empty = '';
+      COMBOS.forEach(function (c) { var e = { A: !!c[0], B: !!c[1], C: !!c[2] }, real = target(e); empty += '<tr><td>' + (e.A ? 'ligada' : 'desl.') + '</td><td>' + (e.B ? 'ligada' : 'desl.') + '</td><td>' + (e.C ? 'cheio' : 'com espaço') + '</td><td>—</td><td>' + (real ? 'abre' : 'fechado') + '</td><td></td></tr>'; });
+      testout.className = ''; testout.innerHTML = '<p class="headline">A tabela mostra o que a sua linha faz em cada situação — ela muda cada vez que a linha fecha.</p><table class="tt"><tr><th>alavanca de casa</th><th>alavanca da fazenda</th><th>baú</th><th>sua linha</th><th>a fazenda</th><th></th></tr>' + empty + '</table>';
+    }
   }
   document.getElementById('copy').addEventListener('click', function () {
     var txt = document.getElementById('dump').textContent, b = this;
