@@ -27,7 +27,9 @@
   .grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;align-items:start}
   @media (max-width:820px){.grid{grid-template-columns:minmax(0,1fr)}}
   .card{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
-  .card h2{margin:0 0 6px;font-size:1.05rem}
+  .card h2{margin:0 0 6px;font-size:1.05rem;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .pybtn{font:600 .78rem/1.2 system-ui,sans-serif;padding:5px 9px;border-radius:999px;border:1px solid var(--line);background:#fbfaf6;color:var(--ink);cursor:pointer}
+  .pybtn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
   .card p{margin:8px 0}
   .hint{color:var(--muted);font-size:.92rem}
   .farmwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -151,11 +153,11 @@
       <p class="status" id="st0">Alavanca desligada. O alçapão segura a água.</p>
     </div>
     <div class="card">
-      <h2>O código do lado</h2>
+      <h2>O código do lado <button type="button" class="pybtn" data-py>ver em Python</button></h2>
 <pre class="code" id="code0"><span class="ln" id="c0l1"><span class="kw">se</span> <span class="v" id="c0-alavanca">alavanca_ligada</span>:</span><span class="ln" id="c0l2">    <span class="fn">abrir_alcapao</span>()   <span class="cm"># a água faz o resto</span></span></pre>
       <div class="badges" id="b0"></div>
-      <p><b>O mapa:</b> a alavanca é o <code>se</code> — a pergunta que o sistema faz. O alçapão é a ação — o que ele faz quando a resposta é sim.</p>
-      <p>A água, os funis e o baú <b>não estão no código</b>. Eles não decidem nada: são o que acontece <i>depois</i> da decisão. No código, só a decisão aparece.</p>
+      <p>Olha o que está escrito aí do lado: é a sua fazenda, em duas linhas. A primeira é uma <b>pergunta</b> — <i>a alavanca está ligada?</i> A segunda é o que acontece quando a resposta é sim — <i>abre o alçapão</i>. É assim que um programa pensa: pergunta, e faz.</p>
+      <p>E a água, os funis, o baú? Não estão no código, e não é esquecimento: eles não decidem nada, só acontecem depois que o alçapão abre. <b>Código é só a parte que decide.</b></p>
     </div>
   </div>
   <div class="navbtns"><button disabled>‹ anterior</button><button data-go="1">Próximo degrau ›</button></div>
@@ -172,14 +174,15 @@
       <p class="status" id="st1"></p>
     </div>
     <div class="card">
-      <h2>O código do lado</h2>
+      <h2>O código do lado <button type="button" class="pybtn" data-py>ver em Python</button></h2>
 <pre class="code" id="code1"><span class="ln" id="c1l1"><span class="kw">se</span> <span class="v" id="c1-alavanca">alavanca_ligada</span> <span class="kw">e</span> <span class="kw">não</span> <span class="v" id="c1-bau">bau_cheio</span>:</span><span class="ln" id="c1l2">    <span class="fn">abrir_alcapao</span>()</span></pre>
       <div class="badges" id="b1"></div>
       <blockquote class="ponte">
-        <p>A tocha depois do comparador é o <b><code>não</code></b>: ela responde o contrário do que recebe.</p>
-        <p>As três tochas do meio são o <b><code>e</code></b>. É assim que se faz "os dois ao mesmo tempo" com redstone: uma tocha inverte cada entrada, os dois fios se juntam (isso é um "ou"), e a última tocha inverte a junção. <i>"Não (não-alavanca ou não-baú-livre)"</i> é o mesmo que <i>"alavanca e baú livre"</i>. Você já montou isso — agora ele tem nome.</p>
+        <p>Agora a fazenda faz uma pergunta dupla: <i>a alavanca está ligada</i> <b>e</b> <i>o baú ainda tem espaço?</i> Repara nas tochas.</p>
+        <p>Uma tocha de redstone sempre responde o <b>contrário</b> do que recebe. Quem mexe com redstone chama isso de <b>NOT gate</b>; no código, é o <code>não</code> — a <b>negação</b>. É ela, colada no comparador, que transforma "baú cheio" em "baú com espaço".</p>
+        <p>E as três tochas do meio? São o jeito de fazer "os dois ao mesmo tempo": a <b>porta AND</b>, que no código é o <code>e</code>. Se você já montou uma porta AND com tochas, já fez esta conta com as mãos — inverte cada entrada, junta, inverte de novo. Agora ela tem nome.</p>
       </blockquote>
-      <p class="foot-note">Em Python de verdade a mesma linha é <code>if alavanca_ligada and not bau_cheio:</code>. Só as palavras mudam.</p>
+      <p class="foot-note">Em Python de verdade a mesma linha é <code>if alavanca_ligada and not bau_cheio:</code> — <code>not</code> é a negação, <code>and</code> é a porta AND. Só as palavras mudam; o botão <b>ver em Python</b> mostra.</p>
       <p class="hint">Aqui não tem pergunta — só olha, mexe, e lê o código. A tarefa é no degrau 3.</p>
     </div>
   </div>
@@ -191,7 +194,7 @@
   <div class="grid">
     <div class="card">
       <h2>Degrau 3 · Duas alavancas</h2>
-      <p class="hint">A fazenda ganhou uma segunda alavanca — uma em casa, outra na fazenda. Os dois fios se juntam antes da porta E. O comparador e a tocha do baú continuam. <b>Clica nas alavancas e no baú.</b></p>
+      <p class="hint">Sua vez. Esta fazenda tem <b>duas alavancas</b> — uma em casa, outra na fazenda — e o mesmo baú com comparador. Os dois fios se juntam antes da porta AND. <b>Mexe nas alavancas e no baú</b> e vê quando o alçapão abre.</p>
       <div class="farmwrap"><svg class="farm" viewBox="0 0 900 340" id="svg2" aria-label="Desenho da fazenda com duas alavancas"></svg></div>
       <div class="legend"><span class="l-logic">decisão (redstone)</span><span class="l-plumb">encanamento (água, funis, baú)</span></div>
       <p class="status" id="st2"></p>
@@ -199,7 +202,8 @@
     <div class="card">
       <h2>Monte o código desta fazenda</h2>
       <div class="rule">Regra: colher quando <b>qualquer</b> uma das duas alavancas estiver ligada — mas <b>nunca</b> com o baú cheio.</div>
-      <p>Aqui o código sumiu. Olha o desenho, mexe nas alavancas, e <b>monta a linha do <code>se</code></b> tocando nas peças. A segunda linha já está pronta.</p>
+      <p><b>O que você tem que fazer:</b> montar a primeira linha do código — a pergunta do <code>se</code> — tocando nas peças (ou escrevendo). A segunda linha já está pronta.</p>
+      <p><b>Como saber se ficou certo:</b> a tabela abaixo compara a sua linha com a fazenda em todas as situações. Quando aparecer <b>8 de 8</b>, a sua linha faz exatamente o que a fazenda faz — aí é só enviar. Se não chegar em 8, envia mesmo assim: o que a gente quer ver é como você pensou.</p>
 <pre class="code" id="built"><span class="ln"><span class="kw">se</span> <span id="expr" class="expr">…</span>:</span><span class="ln">    <span class="fn">abrir_alcapao</span>()</span></pre>
       <p class="syntax" id="syntax"></p>
       <div class="tiles" id="tiles"></div>
@@ -223,7 +227,7 @@
 </main>
 
 <footer>
-  <span>versão dos itens: <code id="ver">ponte-2026-09-10-6</code> — vai junto com a resposta</span>
+  <span>versão dos itens: <code id="ver">ponte-2026-09-10-7</code> — vai junto com a resposta</span>
   <span>prototypes/ponte-minima.html · instrumento descartável, não é produto</span>
 </footer>
 
@@ -234,7 +238,7 @@
     action: 'https://docs.google.com/forms/d/e/1FAIpQLScMmBTKBIAW81PqDjlZ_RH4Uykh3YGX0E8j4M7sKvSuuLlkAw/formResponse',
     field: 'entry.829939594' // a unica pergunta do deposito: o registro em JSON
   };
-  var VERSION = 'ponte-2026-09-10-6';  // -6: a tabela mantem a ultima avaliacao enquanto a linha nao fecha
+  var VERSION = 'ponte-2026-09-10-7';  // -7: voz humana, degrau 3 claro, nomes das portas, botao 'ver em Python'
 
   // ---------- estado por degrau ----------
   var S = [
@@ -563,6 +567,16 @@
     if (e.key === 'ArrowLeft' && cur > 0) go(cur - 1);
   });
 
+  // ---------- ver em Python: troca so as palavras-chave dos paineis de codigo ----------
+  var PY = { 'se': 'if', 'e': 'and', 'ou': 'or', 'não': 'not' }, pyOn = false;
+  function applyLang() {
+    document.querySelectorAll('#code0 .kw, #code1 .kw').forEach(function (k) {
+      if (!k.dataset.pt) k.dataset.pt = k.textContent;
+      k.textContent = pyOn ? (PY[k.dataset.pt] || k.dataset.pt) : k.dataset.pt;
+    });
+    document.querySelectorAll('.pybtn').forEach(function (b) { b.classList.toggle('on', pyOn); b.textContent = pyOn ? 'ver em português' : 'ver em Python'; });
+  }
+  document.querySelectorAll('.pybtn').forEach(function (b) { b.addEventListener('click', function () { pyOn = !pyOn; applyLang(); }); });
   // ---------- perguntas: opcoes renderizadas do mesmo texto que vai para o deposito ----------
   document.querySelectorAll('.opts[data-opts]').forEach(function (box) {
     var opts = JSON.parse(box.getAttribute('data-opts')), name = box.getAttribute('data-name');
