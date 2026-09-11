@@ -76,6 +76,15 @@
   blockquote.ponte p{margin:6px 0}
   code{font:.92em ui-monospace,Menlo,Consolas,monospace;background:#efece4;padding:1px 5px;border-radius:5px}
   .foot-note{font-size:.88rem;color:var(--muted);margin-top:10px}
+  .fotos{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
+  .fotos summary{cursor:pointer;font-size:.9rem;font-weight:600;color:var(--ink)}
+  .fotos summary small{font-weight:400;color:var(--muted)}
+  .fotos .fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+  .fotos figure{margin:0;min-width:0}
+  .fotos img{display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#dfe6d2}
+  .fotos figcaption{font-size:.8rem;color:var(--muted);margin-top:4px;line-height:1.3}
+  .fotos figcaption b{color:var(--ink)}
+  .fotos .fnote{font-size:.8rem;color:var(--muted);margin:8px 0 0}
   .rule{font-size:1.08rem;padding:10px 14px;background:#fbf5ec;border-left:4px solid var(--accent);border-radius:0 10px 10px 0;margin:12px 0}
   .q{margin:14px 0 0;padding-top:12px;border-top:1px dashed var(--line)}
   .q .qt{margin:0 0 6px;font-weight:600}
@@ -151,6 +160,13 @@
       <div class="farmwrap"><svg class="farm" viewBox="0 0 900 300" id="svg0" aria-label="Desenho da fazenda, visão de cima"></svg></div>
       <div class="legend"><span class="l-logic">decisão (redstone)</span><span class="l-plumb">encanamento (água, funis, baú)</span></div>
       <p class="status" id="st0">Alavanca desligada. O alçapão segura a água.</p>
+      <details class="fotos" open>
+        <summary>A mesma fazenda, montada no jogo <small>· Java, 10/09</small></summary>
+        <div class="fgrid">
+          <figure><img src="prints/web/degrau1-desligada.jpg" alt="Fazenda no Minecraft: alavanca desligada, trigo em pé, água presa" loading="lazy" width="900" height="294"><figcaption><b>Alavanca desligada.</b> Trigo em pé, água presa.</figcaption></figure>
+          <figure><img src="prints/web/degrau1-ligada.jpg" alt="Fazenda no Minecraft: alavanca ligada, água correndo a fileira até o funil" loading="lazy" width="900" height="294"><figcaption><b>Alavanca ligada.</b> A água correu a fileira; a colheita foi para o baú.</figcaption></figure>
+        </div>
+      </details>
     </div>
     <div class="card">
       <h2>O código do lado <button type="button" class="pybtn" data-py>ver em Python</button></h2>
@@ -172,6 +188,16 @@
       <div class="farmwrap"><svg class="farm" viewBox="0 0 900 340" id="svg1" aria-label="Desenho da fazenda com comparador, tocha e porta E"></svg></div>
       <div class="legend"><span class="l-logic">decisão (redstone)</span><span class="l-plumb">encanamento (água, funis, baú)</span></div>
       <p class="status" id="st1"></p>
+      <details class="fotos" open>
+        <summary>A mesma fazenda no jogo, nos quatro casos <small>· Java, 10/09</small></summary>
+        <div class="fgrid">
+          <figure><img src="prints/web/degrau2-desligada.jpg" alt="Alavanca desligada, baú com espaço: água presa" loading="lazy" width="900" height="545"><figcaption><b>desligada · baú com espaço</b> → água presa</figcaption></figure>
+          <figure><img src="prints/web/degrau2-ligada.jpg" alt="Alavanca ligada, baú com espaço: a água corre" loading="lazy" width="900" height="545"><figcaption><b>ligada · baú com espaço</b> → <b>a água corre</b></figcaption></figure>
+          <figure><img src="prints/web/degrau2-cheio.jpg" alt="Alavanca ligada, baú cheio: água presa" loading="lazy" width="900" height="545"><figcaption><b>ligada · baú cheio</b> → água presa</figcaption></figure>
+          <figure><img src="prints/web/degrau2-desligada-cheio.jpg" alt="Alavanca desligada, baú cheio: água presa" loading="lazy" width="900" height="545"><figcaption><b>desligada · baú cheio</b> → água presa</figcaption></figure>
+        </div>
+        <p class="fnote">Só um dos quatro colhe: alavanca ligada <b>e</b> baú com espaço. É a linha do código, em foto. As tochas acesas e apagadas contam a mesma história do desenho.</p>
+      </details>
     </div>
     <div class="card">
       <h2>O código do lado <button type="button" class="pybtn" data-py>ver em Python</button></h2>
@@ -181,6 +207,7 @@
         <p>Agora a fazenda faz uma pergunta dupla: <i>a alavanca está ligada</i> <b>e</b> <i>o baú ainda tem espaço?</i> Repara nas tochas.</p>
         <p>Uma tocha de redstone sempre responde o <b>contrário</b> do que recebe. Quem mexe com redstone chama isso de <b>NOT gate</b>; no código, é o <code>não</code> — a <b>negação</b>. É ela, colada no comparador, que transforma "baú cheio" em "baú com espaço".</p>
         <p>E as três tochas do meio? São o jeito de fazer "os dois ao mesmo tempo": a <b>porta AND</b>, que no código é o <code>e</code>. Se você já montou uma porta AND com tochas, já fez esta conta com as mãos — inverte cada entrada, junta, inverte de novo. Agora ela tem nome.</p>
+        <p>Dá para montar com menos peças — quem mexe com redstone comprime (um comparador em modo subtração faz o <code>e não</code> de uma vez). Aqui cada operação está separada de propósito: para ter nome.</p>
       </blockquote>
       <p class="foot-note">Em Python de verdade a mesma linha é <code>if alavanca_ligada and not bau_cheio:</code> — <code>not</code> é a negação, <code>and</code> é a porta AND. Só as palavras mudam; o botão <b>ver em Python</b> mostra.</p>
       <p class="hint">Aqui não tem pergunta — só olha, mexe, e lê o código. A tarefa é no degrau 3.</p>
@@ -198,6 +225,12 @@
       <div class="farmwrap"><svg class="farm" viewBox="0 0 900 340" id="svg2" aria-label="Desenho da fazenda com duas alavancas"></svg></div>
       <div class="legend"><span class="l-logic">decisão (redstone)</span><span class="l-plumb">encanamento (água, funis, baú)</span></div>
       <p class="status" id="st2"></p>
+      <details class="fotos">
+        <summary>Como é no jogo <small>· a alavanca da casa fica na casa</small></summary>
+        <div class="fgrid" style="grid-template-columns:minmax(0,1fr)">
+          <figure><img src="prints/web/degrau3-casa.jpg" alt="No Minecraft: uma casa com a alavanca do lado de fora, o fio de redstone atravessando o campo até a fazenda, a água correndo" loading="lazy" width="900" height="333"><figcaption><b>Só a alavanca da casa ligada</b> — o fio atravessa o campo, se junta ao da fazenda, e a água corre.</figcaption></figure>
+        </div>
+      </details>
     </div>
     <div class="card">
       <h2>Monte o código desta fazenda</h2>
@@ -227,7 +260,7 @@
 </main>
 
 <footer>
-  <span>versão dos itens: <code id="ver">ponte-2026-09-10-7</code> — vai junto com a resposta</span>
+  <span>versão dos itens: <code id="ver">ponte-2026-09-10-8</code> — vai junto com a resposta</span>
   <span>prototypes/ponte-minima.html · instrumento descartável, não é produto</span>
 </footer>
 
@@ -238,7 +271,7 @@
     action: 'https://docs.google.com/forms/d/e/1FAIpQLScMmBTKBIAW81PqDjlZ_RH4Uykh3YGX0E8j4M7sKvSuuLlkAw/formResponse',
     field: 'entry.829939594' // a unica pergunta do deposito: o registro em JSON
   };
-  var VERSION = 'ponte-2026-09-10-7';  // -7: voz humana, degrau 3 claro, nomes das portas, botao 'ver em Python'
+  var VERSION = 'ponte-2026-09-10-8';  // -8: a fazenda montada no jogo — fotos ao lado dos desenhos; a frase da compressao na ponte
 
   // ---------- estado por degrau ----------
   var S = [
